@@ -8,7 +8,7 @@ import com.qunar.autotest.uitest.tools.FileReadWrite;
 import com.qunar.autotest.uitest.tools.StringConvert;
 import cucumber.annotation.en.When;
 import org.apache.commons.lang.StringUtils;
-import org.htmlparser.tags.Div;
+import org.htmlparser.Node;
 import org.htmlparser.util.NodeList;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.NoAlertPresentException;
@@ -37,8 +37,10 @@ public class ShoeHomeManagementStepsdef {
 	public void getSoftFromU9() throws Exception {
 		String path="src/main/resources/com/qunar/autotest/uitest/filterKeywords.txt";
 		ShoeHomePage page = pageFactory.getPage(ShoeHomePage.class);
-//		NodeList nList = page.getMapList(DataContext.getDataMap("oldDateString"), DataContext.getDataMap("name"), "http://war3.uuu9.com/Soft/List_22.shtml");
-        NodeList nList = page.getMapList(DataContext.getDataMap("oldDateString"), DataContext.getDataMap("name"), "http://war3.uuu9.com/Soft/List_22_353.shtml");
+		NodeList nList = page.getMapList(DataContext.getDataMap("oldDateString"), DataContext.getDataMap("name"), "http://war3.uuu9.com/Soft/List_22.shtml");
+//      NodeList nList = page.getMapList(DataContext.getDataMap("oldDateString"), DataContext.getDataMap("name"), "http://war3.uuu9.com/Soft/List_22_353.shtml");
+//        NodeList nList = page.getMapList(DataContext.getDataMap("oldDateString"), DataContext.getDataMap("name"), "http://war3.uuu9.com/Soft/List_22_305.shtml");
+
         System.out.println("共" + nList.size() + "个");
 		Set<String> set;
 		boolean flag = false;
@@ -46,13 +48,16 @@ public class ShoeHomeManagementStepsdef {
 			do {
 				flag = false;
 				set = FileReadWrite.getKeyWordsList(path);
-				Div div = (Div) nList.elementAt(i);
+				Node div = nList.elementAt(i);
                 String urlFromDiv = page.getURLFromDiv(div);
                 System.out.println(urlFromDiv);
                 PageBean pagebean = page.getPageBean(urlFromDiv);
-				System.out.println("当前执行到第     " + i + " 个         " + pagebean.getSort()[2]);
-				page.setSort(pagebean.getSort());
-                String softName = StringConvert.filterKeyWords(StringConvert.stringFilter(pagebean.getSort()[2]), set);
+                if (pagebean == null) {
+                    continue;
+                }
+				System.out.println("当前执行到第     " + i + " 个         " + pagebean.getTitle());
+				page.setSort(pagebean);
+                String softName = StringConvert.filterKeyWords(StringConvert.stringFilter(pagebean.getTitle()), set);
                 page.setSoftName(softName);
 				page.setSoftSize(new Double(pagebean.getSoftSize()));
 				page.setKBORMB("MB");

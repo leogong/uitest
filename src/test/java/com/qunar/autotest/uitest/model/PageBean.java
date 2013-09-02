@@ -1,59 +1,84 @@
 package com.qunar.autotest.uitest.model;
 
+import org.apache.commons.lang.StringUtils;
+
+import java.util.Arrays;
+
 public class PageBean {
-	private String[] sort;
-	private String softSize;
-	private String desp;
-	private String picURL;
-	private DownLoad[] download;
-	private String updateDate;
+    private String softSize;
+    private String desp = StringUtils.EMPTY;
+    private String picURL;
+    private DownLoad[] download;
+    private String updateDate;
+    private String title;
+    private String sortLevel;
 
-	public String getUpdateDate() {
-		return updateDate;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setUpdateDate(String updateDate) {
-		this.updateDate = updateDate;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public DownLoad[] getDownload() {
-		return download;
-	}
+    public String getSortLevel() {
+        return sortLevel;
+    }
 
-	public void setDownload(DownLoad[] download) {
-		this.download = download;
-	}
+    public void setSortLevel(String sortLevel) {
+        this.sortLevel = sortLevel;
+    }
 
-	public String[] getSort() {
-		return sort;
-	}
+    public String getUpdateDate() {
+        return updateDate;
+    }
 
-	public void setSort(String[] sort) {
-		this.sort = sort;
-	}
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
+    }
 
-	public String getSoftSize() {
-		return softSize;
-	}
+    public DownLoad[] getDownload() {
+        return download;
+    }
 
-	public void setSoftSize(String softSize) {
-		this.softSize = softSize;
-	}
+    public void setDownload(DownLoad[] download) {
+        this.download = download;
+    }
 
-	public String getDesp() {
-		return desp;
-	}
+    public String getSoftSize() {
+        return softSize;
+    }
 
-	public void setDesp(String desp) {
-		this.desp = desp;
-	}
+    public void setSoftSize(String softSize) {
+        this.softSize = softSize;
+    }
 
-	public String getPicURL() {
-		return picURL;
-	}
+    public String getDesp() {
+        return desp;
+    }
 
-	public void setPicURL(String picURL) {
-		this.picURL = picURL;
-	}
+    public void setDesp(String desp) {
+        this.desp = desp;
+    }
 
+    public String getPicURL() {
+        return picURL;
+    }
+
+    public void setPicURL(String picURL) {
+        this.picURL = picURL;
+    }
+
+    @Override
+    public String toString() {
+        return "PageBean{" +
+                "softSize='" + softSize + '\'' +
+                ", desp='" + desp + '\'' +
+                ", picURL='" + picURL + '\'' +
+                ", download=" + Arrays.toString(download) +
+                ", updateDate='" + updateDate + '\'' +
+                ", title='" + title + '\'' +
+                ", sortLevel='" + sortLevel + '\'' +
+                '}';
+    }
 }

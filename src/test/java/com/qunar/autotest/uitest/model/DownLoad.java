@@ -19,4 +19,12 @@ public class DownLoad {
 	public void setDesp(String desp) {
 		this.desp = desp;
 	}
+
+    @Override
+    public String toString() {
+        return "DownLoad{" +
+                "url='" + url + '\'' +
+                ", desp='" + desp + '\'' +
+                '}';
+    }
 }

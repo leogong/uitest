@@ -1,11 +1,10 @@
 package com.qunar.autotest.uitest.pages;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import com.qunar.autotest.uitest.htmltags.IframeTag;
+import com.qunar.autotest.uitest.model.DownLoad;
+import com.qunar.autotest.uitest.model.PageBean;
+import com.qunar.autotest.uitest.tools.HtmlUtils;
+import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.filters.AndFilter;
 import org.htmlparser.filters.HasAttributeFilter;
@@ -16,10 +15,9 @@ import org.htmlparser.util.NodeList;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
 
-import com.qunar.autotest.uitest.htmltags.IframeTag;
-import com.qunar.autotest.uitest.model.DownLoad;
-import com.qunar.autotest.uitest.model.PageBean;
-import com.qunar.autotest.uitest.tools.HtmlUtils;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author gonglin
@@ -38,6 +36,8 @@ public class ShoeHomePage extends BasePage {
      */
     private static List<String> specialList = new ArrayList<String>();
 
+    private static String imgHtml = "<p align=\"center\"><img src=\"%s\" /></p>";
+
     static {
         /*
          * 增加一级目录栏目
@@ -51,27 +51,14 @@ public class ShoeHomePage extends BasePage {
         ONE_LEVEL.put("其它类型", "8");
         ONE_LEVEL.put("补丁", "15");
         ONE_LEVEL.put("地图包", "16");
+        ONE_LEVEL.put("生存地图", "35");
 
         /*
          * 增加二级目录栏目
          */
-        TWO_LEVEL.put("澄海3C", "17");
-        TWO_LEVEL.put("dota", "18");
-        TWO_LEVEL.put("真三国无双", "21");
-        TWO_LEVEL.put("历史对抗", "24");
-        TWO_LEVEL.put("神话对抗", "25");
-        TWO_LEVEL.put("其他对抗", "26");
-        TWO_LEVEL.put("动漫对抗", "30");
-        TWO_LEVEL.put("火影对抗", "32");
-        TWO_LEVEL.put("武侠对抗", "33");
-
-        TWO_LEVEL.put("守卫剑阁", "19");
-        TWO_LEVEL.put("动漫防守", "22");
-        TWO_LEVEL.put("神话防守", "23");
-        TWO_LEVEL.put("其他防守", "27");
-        TWO_LEVEL.put("火影防守", "28");
-        TWO_LEVEL.put("历史防守", "29");
-        TWO_LEVEL.put("武侠防守", "34");
+        TWO_LEVEL.put("澄海3C", "38");
+        TWO_LEVEL.put("dota", "39");
+        TWO_LEVEL.put("真三国无双", "40");
 
         /*
          * 增加特殊地图
@@ -79,17 +66,16 @@ public class ShoeHomePage extends BasePage {
         specialList.add("澄海3C");
         specialList.add("dota");
         specialList.add("真三国无双");
-        specialList.add("守卫剑阁");
     }
 
     /**
      * 分类
      */
-    public void setSort(String[] sort) {
+    public void setSort(PageBean pageBean) {
         boolean flag = false;
-        sort[2] = sort[2].toLowerCase();
+        String title = pageBean.getTitle();
         for (String specialName : specialList) {
-            if (sort[2].startsWith(specialName)) {
+            if (title.startsWith(specialName)) {
                 runScript("document.all(\"mainFrame\").contentWindow.document.getElementsByTagName(\"select\")[0].value=\""
                         + TWO_LEVEL.get(specialName) + "\"");
                 otherSettings(1);
@@ -101,15 +87,7 @@ public class ShoeHomePage extends BasePage {
             }
         }
         if (!flag) {
-            String sortValue = TWO_LEVEL.get(sort[1]);
-            if (sortValue != null) {
-                runScript("document.all(\"mainFrame\").contentWindow.document.getElementsByTagName(\"select\")[0].value=\""
-                        + sortValue + "\"");
-                flag = true;
-            }
-        }
-        if (!flag) {
-            String sortValue = ONE_LEVEL.get(sort[0]);
+            String sortValue = ONE_LEVEL.get(pageBean.getSortLevel());
             runScript("document.all(\"mainFrame\").contentWindow.document.getElementsByTagName(\"select\")[0].value=\""
                     + sortValue + "\"");
         }
@@ -342,7 +320,7 @@ public class ShoeHomePage extends BasePage {
         webDriver.switchTo().defaultContent();
     }
 
-    public NodeList getMapList(String StringDate, String name, String url) throws Exception {
+    public static NodeList getMapList(String StringDate, String name, String url) throws Exception {
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
         Date oldDate = sf.parse(StringDate);
         Date newDate;
@@ -356,23 +334,22 @@ public class ShoeHomePage extends BasePage {
         boolean flag;
         do {
             flag = false;
-            classFilter = new HasAttributeFilter("class", "maplistbox");
-            NodeFilter filter3 = new AndFilter(new NodeFilter[] { divFilter, classFilter });
-            nList.add(HtmlUtils.getNodeListByFilter(urlString, filter3, "gb2312"));
+            classFilter = new HasAttributeFilter("class", "maplist");
+            NodeFilter filter3 = new AndFilter(new NodeFilter[]{divFilter, classFilter});
+            NodeList listNode = HtmlUtils.getNodeListByFilter(urlString, filter3, "gb2312");
+            NodeList maplist = HtmlUtils.getNodeListByFilter(new TagNameFilter("li"), listNode.toHtml());
+
+            nList.add(maplist);
             int maxSize = nList.size();
             for (int i = nList.size() - 1; i >= 0; i--) {
-                Div lastMap = (Div) nList.elementAt(i);
+                Node lastMap = nList.elementAt(i);
                 NodeList pList = HtmlUtils.getNodeListByFilter(pFilter, lastMap.toHtml());
                 ParagraphTag p = (ParagraphTag) pList.elementAt(1);
-                String dateString = p.getStringText();
-                newDate = sf.parse(dateString.substring(5, dateString.length()));
+                String dateString = p.getStringText().substring(p.getStringText().indexOf("</b>")+4);
+                newDate = sf.parse(dateString);
                 if (newDate.getTime() - oldDate.getTime() >= 0) {
                     if (i == maxSize - 1) {
-                        classFilter = new HasAttributeFilter("class", "bottomtext");
-                        NodeFilter divWithClass = new AndFilter(new NodeFilter[] { divFilter, classFilter });
-                        NodeFilter parentFilter = new HasParentFilter(divWithClass);
-                        NodeFilter newfilter6 = new AndFilter(new NodeFilter[] { parentFilter, aFilter });
-                        NodeList newList = HtmlUtils.getNodeListByFilter(urlString, newfilter6, "gb2312");
+                        NodeList newList = HtmlUtils.getNodeListByFilter(new TagNameFilter("a"), listNode.toHtml());
                         for (int j = 0; j < newList.size(); j++) {
                             LinkTag linktag = (LinkTag) newList.elementAt(j);
                             if (linktag.getLinkText().equals("下一页")) {
@@ -386,7 +363,7 @@ public class ShoeHomePage extends BasePage {
                             break;
                     } else if (newDate.getTime() - oldDate.getTime() == 0) {
                         NodeFilter nodefilter = new AndFilter(
-                                new NodeFilter[] { new HasParentFilter(h3Filter), aFilter });
+                                new NodeFilter[]{new HasParentFilter(h3Filter), aFilter});
                         NodeList nameList = HtmlUtils.getNodeListByFilter(nodefilter, lastMap.toHtml());
                         LinkTag aTag = (LinkTag) nameList.elementAt(0);
                         if (aTag.getStringText().toLowerCase().equals(name)) {
@@ -404,7 +381,7 @@ public class ShoeHomePage extends BasePage {
         return nList;
     }
 
-    public String getURLFromDiv(Div div) throws Exception {
+    public String getURLFromDiv(Node div) throws Exception {
         NodeList aList = HtmlUtils.getNodeListByFilter(new TagNameFilter("a"), div.toHtml());
         return ((LinkTag) aList.elementAt(0)).getLink();
     }
@@ -413,83 +390,80 @@ public class ShoeHomePage extends BasePage {
         return webDriver.switchTo().alert();
     }
 
-    public PageBean getPageBean(String url) throws Exception {
-        NodeFilter pFilter = new TagNameFilter("p");
-        NodeFilter pParent;
+    public static PageBean getPageBean(String url) throws Exception {
+//
+
         PageBean pageBean = new PageBean();
-        NodeFilter aFilter = new TagNameFilter("a");
-        NodeFilter classFilter = new HasAttributeFilter("class", "t-c f-14 m-10 dzpt cl");
-        pParent = new HasParentFilter(new AndFilter(new NodeFilter[] { pFilter, classFilter }));
-        NodeFilter aWithClass = new AndFilter(new NodeFilter[] { aFilter, pParent });
-        String mapHtml = HtmlUtils.getHtmlByUrl(url, "GB2312");
-        /*
-         * 查询详情页
-         */
-        NodeList detailAList = HtmlUtils.getNodeListByFilter(aWithClass, mapHtml);
-        if (detailAList == null || detailAList.elementAt(0) ==null) {
-            detailAList = HtmlUtils.getNodeListByFilter(new AndFilter(new NodeFilter[] {
-                    aFilter,
-                    new HasParentFilter(new AndFilter(new NodeFilter[] { pFilter,
-                            new HasAttributeFilter("class", "t-c f-14 m-10") })) }), mapHtml);
+        //content part
+        String total = HtmlUtils.getHtmlByUrl(url, "GB2312");
+        Node content = HtmlUtils.getNodeListByFilter(new AndFilter(new NodeFilter[]{new TagNameFilter("div"),
+                new HasAttributeFilter("class", "content")}), total).elementAt(0);
+        //title
+        NodeList nodeListByFilter = HtmlUtils.getNodeListByFilter(new AndFilter(new NodeFilter[]{new TagNameFilter("div"), new HasAttributeFilter("class", "toptext")}), content.toHtml());
+        if (nodeListByFilter.elementAt(0) == null) {
+            nodeListByFilter = HtmlUtils.getNodeListByFilter(new AndFilter(new NodeFilter[]{new TagNameFilter("div"), new HasAttributeFilter("class", "content")}), content.toHtml());
         }
-        String detailLink = ((LinkTag) detailAList.elementAt(0)).getLink();
-        NodeFilter divFilter = new TagNameFilter("div");
-        classFilter = new HasAttributeFilter("class", "infobox");
-        NodeFilter divWithClass = new AndFilter(new NodeFilter[] { divFilter, classFilter });
-        NodeList pList = HtmlUtils.getNodeListByFilter(pFilter, HtmlUtils.getNodeListByFilter(divWithClass, mapHtml)
-                .elementAt(0).toHtml());
-        ParagraphTag pSize = (ParagraphTag) pList.elementAt(0);
-        String pStringText = pSize.getStringText();
-        int m = pStringText.indexOf("M");
-        m = m == -1 ? pStringText.indexOf(" ") : m;
-        pageBean.setSoftSize(pStringText.substring(pStringText.indexOf("：") + 1, m));
-        pageBean.setUpdateDate(pStringText.substring(pStringText.indexOf("间：") + 2, pStringText.length()));
-        classFilter = new HasAttributeFilter("class", "title");
-        divWithClass = new AndFilter(new NodeFilter[] { divFilter, classFilter });
-        pParent = new HasParentFilter(divWithClass);
-        NodeFilter aParent = new HasParentFilter(new AndFilter(new NodeFilter[] { pFilter, pParent }));
-        NodeList sortList = HtmlUtils
-                .getNodeListByFilter(new AndFilter(new NodeFilter[]{aFilter, aParent}), mapHtml);
-        String[] sort = new String[3];
-        sort[0] = ((LinkTag) sortList.elementAt(2)).getLinkText();
-        if (sortList.size() == 4)
-            sort[1] = ((LinkTag) sortList.elementAt(3)).getLinkText();
-        NodeFilter h2Filter = new TagNameFilter("h2");
-        classFilter = new HasAttributeFilter("class", "maptitle");
-        NodeList titleList = HtmlUtils.getNodeListByFilter(new AndFilter(new NodeFilter[] { h2Filter, classFilter }),
-                mapHtml);
-        sort[2] = ((HeadingTag) titleList.elementAt(0)).getStringText();
-        pageBean.setSort(sort);
-        classFilter = new HasAttributeFilter("class", "logobox");
-        NodeFilter imageFilter = new TagNameFilter("img");
-        NodeFilter imageParent = new HasParentFilter(new AndFilter(new NodeFilter[] { divFilter, classFilter }));
-        NodeList imageList = HtmlUtils.getNodeListByFilter(
-                new AndFilter(new NodeFilter[] { imageFilter, imageParent }), mapHtml);
-        pageBean.setPicURL(((ImageTag) imageList.elementAt(0)).getImageURL());
+        Node titleNode = nodeListByFilter.elementAt(0);
+        NodeList h1 = HtmlUtils.getNodeListByFilter(new TagNameFilter("h1"), titleNode.toHtml());
+        if (h1.elementAt(0) == null) {
+            h1 = HtmlUtils.getNodeListByFilter(new TagNameFilter("h2"), titleNode.toHtml());
+        }
+        pageBean.setTitle(((HeadingTag) h1.elementAt(0)).getStringText());
+        //image
+        Node picNode = HtmlUtils.getNodeListByFilter(new AndFilter(new NodeFilter[]{new TagNameFilter("div"), new HasAttributeFilter("class", "picbox l")}), content.toHtml()).elementAt(0);
+        if (picNode == null) {
+            System.out.println("skip this old one!");
+            return null;
+        }
+        pageBean.setPicURL(((ImageTag) HtmlUtils.getNodeListByFilter(new TagNameFilter("img"), picNode.toHtml()).elementAt(0)).getImageURL());
+        //softSize
+        Node blockNode = HtmlUtils.getNodeListByFilter(new AndFilter(new NodeFilter[]{new TagNameFilter("div"), new HasAttributeFilter("class", "mation r")}), content.toHtml()).elementAt(0);
+        NodeList span = HtmlUtils.getNodeListByFilter(new TagNameFilter("span"), blockNode.toHtml());
+        Node softSizeNode = span.elementAt(0);
+        String softSize = softSizeNode.toPlainTextString();
+        pageBean.setSoftSize(softSize.substring(softSize.indexOf("：") + 1, softSize.indexOf("MB")));
+        //update date
+        String dateString = span.elementAt(4).toPlainTextString();
+        String date = dateString.substring(dateString.indexOf("：") + 1);
+        pageBean.setUpdateDate(date);
+        //pic content
+        NodeList pTagList = HtmlUtils.getNodeListByFilter(new AndFilter(new NodeFilter[]{new TagNameFilter("p"), new HasParentFilter(new AndFilter(new NodeFilter[]{new TagNameFilter("div"), new HasAttributeFilter("id", "content")}))}), total);
+        NodeList aTagList = HtmlUtils.getNodeListByFilter(new TagNameFilter("a"), pTagList.toHtml());
+        for (int i = 0; i < aTagList.size(); i++) {
+            String link = ((LinkTag) aTagList.elementAt(i)).getLink();
+            pageBean.setDesp(pageBean.getDesp() + String.format(imgHtml, link.substring(link.indexOf("url=") + 4)));
+        }
+        //describe
+        Node desNode = HtmlUtils.getNodeListByFilter(new AndFilter(new NodeFilter[]{new TagNameFilter("div"), new HasAttributeFilter("class", "introduction")}), content.toHtml()).elementAt(0);
+        pageBean.setDesp(pageBean.getDesp() + desNode.toHtml());
+        //download
         NodeFilter iframeFilter = new TagNameFilter("iframe");
-        NodeList iframeList = HtmlUtils.getNodeListByFilter(iframeFilter, mapHtml);
+        NodeList iframeList = HtmlUtils.getNodeListByFilter(iframeFilter, content.toHtml());
         String iframeLink = ((IframeTag) iframeList.elementAt(0)).getAttribute("src");
-        NodeFilter liFilter = new TagNameFilter("li");
-        NodeFilter aParentFilter = new HasParentFilter(liFilter);
-        NodeList liList = HtmlUtils.getNodeListByFilter(iframeLink, new AndFilter(new NodeFilter[] {
-                new TagNameFilter("a"), aParentFilter }), "GB2312");
-        DownLoad[] dl = new DownLoad[liList.size()];
-        for (int i = 0; i < liList.size(); i++) {
-            LinkTag linkTag = (LinkTag) liList.elementAt(i);
-            dl[i] = new DownLoad();
-            String desp = linkTag.getStringText();
-            dl[i].setDesp(desp);
-            if (desp.startsWith("迅雷"))
-                dl[i].setUrl(linkTag.getAttribute("onclick"));
-            else
-                dl[i].setUrl(linkTag.getLink());
+        Node ddTotalNode = HtmlUtils.getNodeListByFilter(iframeLink, new TagNameFilter("dd"), "GB2312").elementAt(1);
+        NodeList ddList = HtmlUtils.getNodeListByFilter(new TagNameFilter("a"), ddTotalNode.toHtml());
+        DownLoad[] ddlist = new DownLoad[ddList.size()];
+        for (int i = 0; i < ddList.size(); i++) {
+            LinkTag dd = (LinkTag) ddList.elementAt(i);
+            DownLoad d = new DownLoad();
+            d.setDesp(dd.getLinkText());
+            d.setUrl(dd.getLink());
+            ddlist[i] = d;
         }
-        pageBean.setDownload(dl);
-        classFilter = new HasAttributeFilter("class", "f-14 m-10");
-        NodeList despNodeList = HtmlUtils.getNodeListByFilter(detailLink, new AndFilter(pFilter, new HasParentFilter(
-                new AndFilter(new NodeFilter[] { divFilter, classFilter }))), null);
-        pageBean.setDesp(despNodeList.toHtml());
+        pageBean.setDownload(ddlist);
+        //sort level
+        LinkTag sortLevel = (LinkTag) HtmlUtils.getNodeListByFilter(new TagNameFilter("a"), HtmlUtils.getNodeListByFilter(new AndFilter(new NodeFilter[]{new TagNameFilter("div"), new HasAttributeFilter("class", "bord detail m-10")}), total).toHtml()).elementAt(2);
+
+        pageBean.setSortLevel(sortLevel.getLinkText());
+
+
+//        System.out.println(pageBean);
+
+
         return pageBean;
     }
 
+    public static void main(String[] args) throws Exception {
+        getMapList("2013-06-19","RG传奇4.0","http://war3.uuu9.com/Soft/List_22.shtml");
+    }
 }
