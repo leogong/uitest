@@ -10,7 +10,7 @@ public class SerializeToFile {
 
 	public static User getUser() throws IOException, ClassNotFoundException {
 		FileInputStream fis = new FileInputStream(
-                "/opt/chromedriver/myPerson.output");
+                "E:\\java tools\\chromedriver\\myPerson.output");
         ObjectInputStream ois = new ObjectInputStream(fis);
 		return (User) ois.readObject();
 	}

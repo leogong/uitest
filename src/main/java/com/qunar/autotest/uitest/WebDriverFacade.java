@@ -57,7 +57,7 @@ public class WebDriverFacade {
                 capabilities.setCapability(FirefoxDriver.PROFILE, profile);
             } else if (browserName.equals("chrome")) {
                 System.setProperty("webdriver.chrome.driver",
-                        "/opt/chromedriver/chromedriver");
+                        "E:\\java tools\\chromedriver\\chromedriver.exe");
             }
             browser = webDriverConstructor.newInstance(capabilities);
             browser.manage().timeouts().implicitlyWait(8, TimeUnit.SECONDS);
