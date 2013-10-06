@@ -28,7 +28,7 @@ public class DataContext {
     static {
         try {
             keyWords.addAll(FileReadWrite.getKeyWordsList("src/main/resources/com/qunar/autotest/uitest/keywords.txt"));
-            url = FileReadWrite.getKeyWordsList("src/main/resources/com/qunar/autotest/uitest/keywords.txt").iterator().next();
+            url = FileReadWrite.getKeyWordsList("src/main/resources/com/qunar/autotest/uitest/url").iterator().next();
             urlMessage = "[url=" + url + "][color=White]%s[/color][/url]";
         } catch (IOException e) {
             System.out.println("读取keywords文件失败");
