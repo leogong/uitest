@@ -15,7 +15,8 @@ public class LoginShoeHomePage extends BasePage {
 
     @Override
     public String getUrl() {
-        return "http://" + DataContext.getUrl() + "/admin/admin_login.asp";
+        return "http://" + DataContext.getUrl();
+//        return "http://www.baidu.com";
     }
 
     public void login() throws InterruptedException, IOException, ClassNotFoundException {
@@ -25,5 +26,10 @@ public class LoginShoeHomePage extends BasePage {
         findElement(By.id("checkcode")).click();
         Thread.sleep(1000 * 5);
         findElement(By.name("submit")).click();
+//        chrome 测试出现乱码，修改使用firefox
+//        WebElement element = findElement(By.xpath("//*[@id=\"kw\"]"));
+//        element.click();
+//        element.clear();
+//        element.sendKeys("我");
     }
 }
