@@ -43,17 +43,18 @@ public class WebDriverFacade {
             Constructor<WebDriver> webDriverConstructor = getDriverConstructor(driver);
             DesiredCapabilities capabilities = new DesiredCapabilities(browserName, "", platform);
             if (browserName.equals("internet explorer")) {
+                System.setProperty("webdriver.ie.driver","E:\\java tools\\chromedriver\\IEDriverServer.exe");
                 capabilities.setCapability(CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION, true);
                 capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
             } else if (browserName.equals("firefox")) {
-                System.setProperty("webdriver.firefox.bin", "D:\\Program Files\\Mozilla Firefox\\firefox.exe");
+//                System.setProperty("webdriver.firefox.bin", "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe");
                 FirefoxProfile profile = new FirefoxProfile();
                 try {
-                    profile.addExtension(WebDriverFacade.class, "firebug-1.9.1-fx.xpi");
+                    profile.addExtension(WebDriverFacade.class, "firebug-1.11.4b1.xpi");
                 } catch (IOException e) {
                    e.printStackTrace();
                 }
-                profile.setPreference("extensions.firebug.currentVersion", "1.9.1");
+                profile.setPreference("extensions.firebug.currentVersion", "1.11.4b1");
                 capabilities.setCapability(FirefoxDriver.PROFILE, profile);
             } else if (browserName.equals("chrome")) {
                 System.setProperty("webdriver.chrome.driver",
