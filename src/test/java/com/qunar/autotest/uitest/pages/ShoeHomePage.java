@@ -13,8 +13,10 @@ import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.tags.*;
 import org.htmlparser.util.NodeList;
 import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -72,6 +74,7 @@ public class ShoeHomePage extends BasePage {
      * 分类
      */
     public void setSort(PageBean pageBean) {
+        switchToDefaultContent();
         boolean flag = false;
         String title = pageBean.getTitle();
         for (String specialName : specialList) {
@@ -98,13 +101,11 @@ public class ShoeHomePage extends BasePage {
     }
 
     public void topNav(String navName) {
-        /*
-         * 通过JS控制IFRAME中元素
-         */
+        switchToFrame("leftFrame");
         if (navName.equals("软件管理")) {
-            runScript("document.all(\"leftFrame\").contentWindow.document.body.children[0].children[0].children[1].children[2].children[1].children[0].children[0].children[1].click()");
+            findElement(By.xpath("//*[@id=\"submenu2\"]/ul/li[1]/a[2]")).click();
         } else if (navName.equals("添加软件")) {
-            runScript("document.all(\"leftFrame\").contentWindow.document.body.children[0].children[0].children[1].children[2].children[1].children[0].children[0].children[0].click()");
+            findElement(By.xpath("//*[@id=\"submenu2\"]/ul/li[1]/a[1]")).click();
         } else if (navName.equals("生成HTML")) {
             runScript("document.all(\"leftFrame\").contentWindow.document.body.children[0].children[0].children[1].children[2].children[1].children[0].children[7].children[0].click()");
         } else if (navName.equals("生成首页")) {
@@ -112,6 +113,22 @@ public class ShoeHomePage extends BasePage {
         } else if (navName.equals("生成地图")) {
             runScript("document.all(\"leftFrame\").contentWindow.document.body.children[0].children[0].children[1].children[0].children[1].children[0].children[6].children[1].click()");
         }
+
+        /*
+         * 通过JS控制IFRAME中元素
+         */
+//        if (navName.equals("软件管理")) {
+//            runScript("document.all(\"leftFrame\").contentWindow.document.body.children[0].children[0].children[1].children[2].children[1].children[0].children[0].children[1].click()");
+//        } else if (navName.equals("添加软件")) {
+//            runScript("document.all(\"leftFrame\").contentWindow.document.body.children[0].children[0].children[1].children[2].children[1].children[0].children[0].children[0].click()");
+//        } else if (navName.equals("生成HTML")) {
+//            runScript("document.all(\"leftFrame\").contentWindow.document.body.children[0].children[0].children[1].children[2].children[1].children[0].children[7].children[0].click()");
+//        } else if (navName.equals("生成首页")) {
+//            runScript("document.all(\"leftFrame\").contentWindow.document.body.children[0].children[0].children[1].children[0].children[1].children[0].children[6].children[0].click()");
+//        } else if (navName.equals("生成地图")) {
+//            runScript("document.all(\"leftFrame\").contentWindow.document.body.children[0].children[0].children[1].children[0].children[1].children[0].children[6].children[1].click()");
+//        }
+
     }
 
     public void setAllHits(int num) {
@@ -160,9 +177,11 @@ public class ShoeHomePage extends BasePage {
 
     }
 
-    public void setSoftName(String name) {
-        runScript("document.all(\"mainFrame\").contentWindow.document.getElementById(\"searchwordbox\").value=\""
-                + name + "\"");
+    public void setSoftName(String name) throws UnsupportedEncodingException {
+//        runScript("document.all(\"mainFrame\").contentWindow.document.getElementById(\"searchwordbox\").value=\""
+//                + name + "\"");
+        switchToFrame("mainFrame");
+        findElement(By.xpath("//*[@id=\"searchwordbox\"]")).sendKeys(new String(name.getBytes(), "utf8"));
     }
 
     public void setSoftSize(double size) {
@@ -170,7 +189,7 @@ public class ShoeHomePage extends BasePage {
                 + "\"");
     }
 
-    public void setKBORMB(String sizeFlag) {
+    public void setKbOrMb(String sizeFlag) {
         int flag = 1;
         if (sizeFlag.equals("KB"))
             flag = 0;
@@ -273,12 +292,15 @@ public class ShoeHomePage extends BasePage {
     }
 
     public String getSoftLatestDate() throws ParseException {
-        return (String) runScript("return document.all(\"mainFrame\").contentWindow.document.getElementsByName(\"all\")[0].parentNode.nextSibling.nextSibling.childNodes[11].innerText");
+        switchToFrame("mainFrame");
+        return findElement(By.xpath("//*[@id=\"tablehovered\"]/tbody/tr[24]/td[6]")).getText();
+//        return (String) runScript("return document.all(\"mainFrame\").contentWindow.document.getElementsByName(\"all\")[0].parentNode.nextSibling.nextSibling.childNodes[11].innerText");
     }
 
     public String getSoftLatestName() throws ParseException {
-
-        return (String) runScript("return document.all(\"mainFrame\").contentWindow.document.getElementsByName(\"all\")[0].parentNode.nextSibling.nextSibling.childNodes[3].childNodes[3].innerText");
+        switchToFrame("mainFrame");
+        return findElement(By.xpath("//*[@id=\"tablehovered\"]/tbody/tr[24]/td[2]/a[2]")).getText();
+//        return (String) runScript("return document.all(\"mainFrame\").contentWindow.document.getElementsByName(\"all\")[0].parentNode.nextSibling.nextSibling.childNodes[3].childNodes[3].innerText");
     }
 
     public void createHTMLSort() {
@@ -312,14 +334,6 @@ public class ShoeHomePage extends BasePage {
         runScript("document.all(\"mainFrame\").contentWindow.document.body.getElementsByTagName(\"a\")[0].click()");
     }
 
-    public void switchToFrame(String id) {
-        webDriver.switchTo().frame(id);
-    }
-
-    public void switchtoDefaultContent() {
-        webDriver.switchTo().defaultContent();
-    }
-
     public static NodeList getMapList(String StringDate, String name, String url) throws Exception {
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
         Date oldDate = sf.parse(StringDate);
@@ -336,7 +350,7 @@ public class ShoeHomePage extends BasePage {
             flag = false;
             classFilter = new HasAttributeFilter("class", "maplist");
             NodeFilter filter3 = new AndFilter(new NodeFilter[]{divFilter, classFilter});
-            NodeList listNode = HtmlUtils.getNodeListByFilter(urlString, filter3, "gb2312");
+            NodeList listNode = HtmlUtils.getNodeListByFilter(urlString, filter3, "gbk");
             NodeList maplist = HtmlUtils.getNodeListByFilter(new TagNameFilter("li"), listNode.toHtml());
 
             nList.add(maplist);
@@ -345,7 +359,7 @@ public class ShoeHomePage extends BasePage {
                 Node lastMap = nList.elementAt(i);
                 NodeList pList = HtmlUtils.getNodeListByFilter(pFilter, lastMap.toHtml());
                 ParagraphTag p = (ParagraphTag) pList.elementAt(1);
-                String dateString = p.getStringText().substring(p.getStringText().indexOf("</b>")+4);
+                String dateString = p.getStringText().substring(p.getStringText().indexOf("</b>") + 4);
                 newDate = sf.parse(dateString);
                 if (newDate.getTime() - oldDate.getTime() >= 0) {
                     if (i == maxSize - 1) {
@@ -395,7 +409,7 @@ public class ShoeHomePage extends BasePage {
 
         PageBean pageBean = new PageBean();
         //content part
-        String total = HtmlUtils.getHtmlByUrl(url, "GB2312");
+        String total = HtmlUtils.getHtmlByUrl(url, "GBK");
         Node content = HtmlUtils.getNodeListByFilter(new AndFilter(new NodeFilter[]{new TagNameFilter("div"),
                 new HasAttributeFilter("class", "content")}), total).elementAt(0);
         //title
@@ -440,7 +454,7 @@ public class ShoeHomePage extends BasePage {
         NodeFilter iframeFilter = new TagNameFilter("iframe");
         NodeList iframeList = HtmlUtils.getNodeListByFilter(iframeFilter, content.toHtml());
         String iframeLink = ((IframeTag) iframeList.elementAt(0)).getAttribute("src");
-        Node ddTotalNode = HtmlUtils.getNodeListByFilter(iframeLink, new TagNameFilter("dd"), "GB2312").elementAt(1);
+        Node ddTotalNode = HtmlUtils.getNodeListByFilter(iframeLink, new TagNameFilter("dd"), "GBK").elementAt(1);
         NodeList ddList = HtmlUtils.getNodeListByFilter(new TagNameFilter("a"), ddTotalNode.toHtml());
         DownLoad[] ddlist = new DownLoad[ddList.size()];
         for (int i = 0; i < ddList.size(); i++) {
@@ -464,6 +478,6 @@ public class ShoeHomePage extends BasePage {
     }
 
     public static void main(String[] args) throws Exception {
-        getMapList("2013-06-19","RG传奇4.0","http://war3.uuu9.com/Soft/List_22.shtml");
+        getMapList("2013-06-19", "RG传奇4.0", "http://war3.uuu9.com/Soft/List_22.shtml");
     }
 }
