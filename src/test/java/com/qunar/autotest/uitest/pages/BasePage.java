@@ -5,7 +5,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import javax.annotation.Nullable;
+//import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +27,7 @@ public abstract class BasePage {
     protected WebElement findElement(final By by) {
         WebDriverWait wait = new WebDriverWait(webDriver, 8);
         wait.until(new ExpectedCondition<WebElement>() {
-            public WebElement apply(@Nullable WebDriver webDriver) {
+            public WebElement apply(WebDriver webDriver) {
                 return webDriver.findElement(by);
             }
         });
@@ -37,7 +37,7 @@ public abstract class BasePage {
     protected List<WebElement> findElements(final By by) {
         WebDriverWait wait = new WebDriverWait(webDriver, 8);
         wait.until(new ExpectedCondition<WebElement>() {
-            public WebElement apply(@Nullable WebDriver webDriver) {
+            public WebElement apply(WebDriver webDriver) {
                 return webDriver.findElement(by);
             }
         });
@@ -77,5 +77,14 @@ public abstract class BasePage {
         } catch (NoSuchWindowException e) {
             System.out.println("Window: " + windowTitle  + " cound not found!");
         }
+    }
+
+    public void switchToFrame(String id) {
+        switchToDefaultContent();
+        webDriver.switchTo().frame(id);
+    }
+
+    public void switchToDefaultContent() {
+        webDriver.switchTo().defaultContent();
     }
 }
