@@ -60,7 +60,7 @@ public class ShoeHomeManagementStepsdef {
                 String softName = StringConvert.filterKeyWords(StringConvert.stringFilter(pagebean.getTitle()), set);
                 page.setSoftName(softName);
 				page.setSoftSize(new Double(pagebean.getSoftSize()));
-				page.setKBORMB("MB");
+				page.setKbOrMb("MB");
 				page.setTags(softName);
                 String desp = StringConvert.filterKeyWords(StringConvert.stringFilter(pagebean.getDesp()), set);
                 page.setDesp(StringUtils.isEmpty(desp)? softName : desp);
