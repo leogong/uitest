@@ -233,9 +233,6 @@
 	<profiles>
 		<profile>
 			<id>firefox</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<resources>
 					<resource>
@@ -246,6 +243,9 @@
 		</profile>
 		<profile>
 			<id>chrome</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
 			<build>
 				<resources>
 					<resource>
