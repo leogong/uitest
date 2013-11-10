@@ -84,6 +84,10 @@ public abstract class BasePage {
         webDriver.switchTo().frame(id);
     }
 
+    public void switchToFrame(WebElement webElement) {
+        webDriver.switchTo().frame(webElement);
+    }
+
     public void switchToDefaultContent() {
         webDriver.switchTo().defaultContent();
     }
