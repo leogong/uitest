@@ -17,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 
 public class WebDriverFacade {
 
+    private static WebDriver browser;
+
     @SuppressWarnings("unchecked")
     private static Constructor<WebDriver> getDriverConstructor(String driver) {
         try {
@@ -36,14 +38,12 @@ public class WebDriverFacade {
         }
     }
 
-    private static WebDriver browser;
-
     public static WebDriver getWebDriver(String driver, String browserName, Platform platform) throws InvocationTargetException, IllegalAccessException, InstantiationException {
         if (browser == null) {
             Constructor<WebDriver> webDriverConstructor = getDriverConstructor(driver);
             DesiredCapabilities capabilities = new DesiredCapabilities(browserName, "", platform);
             if (browserName.equals("internet explorer")) {
-                System.setProperty("webdriver.ie.driver","E:\\java tools\\chromedriver\\IEDriverServer.exe");
+                System.setProperty("webdriver.ie.driver", "E:\\java tools\\chromedriver\\IEDriverServer.exe");
                 capabilities.setCapability(CapabilityType.ForSeleniumServer.ENSURING_CLEAN_SESSION, true);
                 capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
             } else if (browserName.equals("firefox")) {
@@ -52,13 +52,14 @@ public class WebDriverFacade {
                 try {
                     profile.addExtension(WebDriverFacade.class, "firebug-1.11.4b1.xpi");
                 } catch (IOException e) {
-                   e.printStackTrace();
+                    e.printStackTrace();
                 }
                 profile.setPreference("extensions.firebug.currentVersion", "1.11.4b1");
                 capabilities.setCapability(FirefoxDriver.PROFILE, profile);
             } else if (browserName.equals("chrome")) {
                 System.setProperty("webdriver.chrome.driver",
                         "E:\\java tools\\chromedriver\\chromedriver.exe");
+
             }
             browser = webDriverConstructor.newInstance(capabilities);
             browser.manage().timeouts().implicitlyWait(8, TimeUnit.SECONDS);

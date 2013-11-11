@@ -21,7 +21,6 @@ public class LoginShoeHomePage extends BasePage {
     }
 
     public void login() throws InterruptedException, IOException, ClassNotFoundException {
-
         User user = SerializeToFile.getUser();
         WebElement adminName = findElement(By.id("AdminName"));
         adminName.clear();
@@ -38,6 +37,6 @@ public class LoginShoeHomePage extends BasePage {
 //        WebElement element = findElement(By.xpath("//*[@id=\"input\"]"));
 //        element.click();
 //        element.clear();
-//        element.sendKeys(new String("我".getBytes(), "UTF-8"));
+//        element.sendKeys("我");
     }
 }

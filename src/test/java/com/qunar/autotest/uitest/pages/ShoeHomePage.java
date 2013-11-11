@@ -158,7 +158,9 @@ public class ShoeHomePage extends BasePage {
     }
 
     public void setUpdateDate(String date) {
-        findElement(By.xpath("//input[@name=\"SoftTime\"]")).sendKeys(date);
+        WebElement element = findElement(By.xpath("//input[@name=\"SoftTime\"]"));
+        element.clear();
+        element.sendKeys(date);
     }
 
     /**
@@ -191,13 +193,15 @@ public class ShoeHomePage extends BasePage {
     }
 
     public void setDownloadURL(DownLoad[] download) {
-        for (int i = 0; i < download.length; i++) {
+        for (int i = 1; i <= download.length; i++) {
             /*
              * 不使用下载服务器
              */
-            findElement(By.xpath("//select[@name=\"downsid\"]")).findElement(By.xpath("//option[@value=\"0\"]")).click();
-            findElement(By.xpath("//input[@id=\"DownAddress" + i + "\"]")).sendKeys(download[i].getUrl());
-            findElements(By.xpath("//input[@name=\"SiteName\"]")).get(i).sendKeys(download[i].getDesp());
+            findElement(By.xpath("//select[@name=\"downsid" + i + "\"]/option[@value=\"0\"]")).click();
+            findElement(By.xpath("//input[@name=\"DownAddress" + i + "\"]")).sendKeys(download[i-1].getUrl());
+            WebElement element = findElement(By.xpath("//input[@name=\"SiteName" + i + "\"]"));
+            element.clear();
+            element.sendKeys(download[i-1].getDesp());
         }
     }
 
@@ -244,7 +248,7 @@ public class ShoeHomePage extends BasePage {
     }
 
     public void goOn() {
-        findElement(By.xpath("//a[@id=\"addPost2\"])")).click();
+        findElement(By.xpath("//a[@id=\"addPost2\"]")).click();
     }
 
     /**

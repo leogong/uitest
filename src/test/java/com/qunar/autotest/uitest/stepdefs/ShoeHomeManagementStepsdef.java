@@ -69,7 +69,7 @@ public class ShoeHomeManagementStepsdef {
                 page.setDesp(StringUtils.isEmpty(desp) ? softName : desp);
                 page.addMoreDLURL(pagebean.getDownload().length);
                 page.setDownloadURL(pagebean.getDownload());
-//                page.setUpdateDate(pagebean.getUpdateDate());
+                page.setUpdateDate(pagebean.getUpdateDate());
                 page.otherSettings(1);
                 page.setPicURL(pagebean.getPicURL());
                 page.save(2);
@@ -88,6 +88,7 @@ public class ShoeHomeManagementStepsdef {
 
                 }
             } while (flag);
+            page.switchToFrame("mainFrame");
             page.goOn();
         }
 
