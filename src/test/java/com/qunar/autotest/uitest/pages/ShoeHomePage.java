@@ -75,7 +75,7 @@ public class ShoeHomePage extends BasePage {
     /**
      * 分类
      */
-    public void setSort(PageBean pageBean) {
+    public void setSort(PageBean pageBean) throws InterruptedException {
         boolean flag = false;
         String title = pageBean.getTitle();
         for (String specialName : specialList) {
@@ -92,7 +92,6 @@ public class ShoeHomePage extends BasePage {
         if (!flag) {
             String sortValue = ONE_LEVEL.get(pageBean.getSortLevel());
             findElement(By.xpath("//select[@id=\"classid\"]")).findElement(By.xpath("//option[@value=\"" + sortValue + "\"]")).click();
-
         }
     }
 
@@ -149,12 +148,12 @@ public class ShoeHomePage extends BasePage {
         if ("蓝色".equals(color)) {
             value = "2";
         }
-        findElement(By.xpath("//select[@id=\"ColorMode\"]")).findElement(By.xpath("//option[@value=\"" + value + "\"]")).click();
+        findElement(By.xpath("//select[@id=\"ColorMode\"]/option[@value=" + value + "]")).click();
 
         /*
          * 字体直接加粗
          */
-        findElement(By.xpath("//select[@id=\"FontMode\"]")).findElement(By.xpath("//option[@value=\"1\"]")).click();
+        findElement(By.xpath("//select[@id=\"FontMode\"]/option[@value=1]")).click();
     }
 
     public void setUpdateDate(String date) {
@@ -198,10 +197,10 @@ public class ShoeHomePage extends BasePage {
              * 不使用下载服务器
              */
             findElement(By.xpath("//select[@name=\"downsid" + i + "\"]/option[@value=\"0\"]")).click();
-            findElement(By.xpath("//input[@name=\"DownAddress" + i + "\"]")).sendKeys(download[i-1].getUrl());
+            findElement(By.xpath("//input[@name=\"DownAddress" + i + "\"]")).sendKeys(download[i - 1].getUrl());
             WebElement element = findElement(By.xpath("//input[@name=\"SiteName" + i + "\"]"));
             element.clear();
-            element.sendKeys(download[i-1].getDesp());
+            element.sendKeys(download[i - 1].getDesp());
         }
     }
 
@@ -230,11 +229,12 @@ public class ShoeHomePage extends BasePage {
     /**
      * 点击其它属性按钮
      */
-    public void otherSettings(int page) {
+    public void otherSettings(int page) throws InterruptedException {
         if (page == 1)
             findElement(By.xpath("//input[@id=\"otherSetting1\"]")).click();
         else if (page == 2)
             findElement(By.xpath("//input[@id=\"otherSetting2\"]")).click();
+        Thread.sleep(1000);
     }
 
     /**

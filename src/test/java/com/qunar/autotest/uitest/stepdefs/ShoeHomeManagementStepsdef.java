@@ -42,7 +42,7 @@ public class ShoeHomeManagementStepsdef {
         page.switchToFrame("mainFrame");
         NodeList nList = page.getMapList(DataContext.getDataMap("oldDateString"), DataContext.getDataMap("name"), "http://war3.uuu9.com/Soft/List_22.shtml");
 //      NodeList nList = page.getMapList(DataContext.getDataMap("oldDateString"), DataContext.getDataMap("name"), "http://war3.uuu9.com/Soft/List_22_353.shtml");
-//        NodeList nList = page.getMapList(DataContext.getDataMap("oldDateString"), DataContext.getDataMap("name"), "http://war3.uuu9.com/Soft/List_22_305.shtml");
+//      NodeList nList = page.getMapList(DataContext.getDataMap("oldDateString"), DataContext.getDataMap("name"), "http://war3.uuu9.com/Soft/List_22_305.shtml");
 
         System.out.println("共" + nList.size() + "个");
         Set<String> set;
