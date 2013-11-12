@@ -229,12 +229,11 @@ public class ShoeHomePage extends BasePage {
     /**
      * 点击其它属性按钮
      */
-    public void otherSettings(int page) throws InterruptedException {
-        if (page == 1)
+    public void otherSettings(int page) {
+        if (page == 1) {
             findElement(By.xpath("//input[@id=\"otherSetting1\"]")).click();
-        else if (page == 2)
+        } else if (page == 2)
             findElement(By.xpath("//input[@id=\"otherSetting2\"]")).click();
-        Thread.sleep(1000);
     }
 
     /**
@@ -272,15 +271,28 @@ public class ShoeHomePage extends BasePage {
         findElement(By.xpath("//input[@id=\"addDLBtn\"]")).click();
     }
 
-    public void setPicURL(String url) {
-        /*
-         * 软件预览图
-         */
-        findElement(By.xpath("//input[@id=\"Previewimg\"]")).sendKeys(url);
-        /*
-         * 软件缩略图
-         */
-        findElement(By.xpath("//input[@id=\"ImageUrl\"]")).sendKeys(url);
+    public void setPicURL(String url) throws InterruptedException {
+        try {
+            /*
+             * 软件预览图
+             */
+            findElement(By.xpath("//input[@id=\"Previewimg\"]")).sendKeys(url);
+            /*
+             * 软件缩略图
+             */
+            findElement(By.xpath("//input[@id=\"ImageUrl\"]")).sendKeys(url);
+        } catch (Exception e) {
+            System.out.println("this message shows that it fails when first click on the button");
+            otherSettings(1);
+             /*
+             * 软件预览图
+             */
+            findElement(By.xpath("//input[@id=\"Previewimg\"]")).sendKeys(url);
+            /*
+             * 软件缩略图
+             */
+            findElement(By.xpath("//input[@id=\"ImageUrl\"]")).sendKeys(url);
+        }
     }
 
     public String getSoftLatestDate() throws ParseException {

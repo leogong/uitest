@@ -82,6 +82,7 @@ public class ShoeHomeManagementStepsdef {
                         flag = true;
                         String keyWord = alertString.substring(alertString.indexOf("“") + 1, alertString.lastIndexOf("”"));
                         FileReadWrite.writeKeyWords(path, keyWord.trim());
+                        set.add(keyWord.trim());
                     }
                     alert.accept();
                 } catch (NoAlertPresentException ignored) {
